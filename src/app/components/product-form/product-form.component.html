@@ -1,0 +1,134 @@
+<section class="form-card">
+  <h2>New Product</h2>
+
+  <!-- Success banner -->
+  @if (savedProduct()) {
+    <div class="alert success" role="alert" aria-live="polite">
+      ✅ Product "<strong>{{ savedProduct()!.name }}</strong>" saved successfully!
+    </div>
+  }
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" novalidate aria-label="New product form">
+
+    <!-- Name -->
+    <div class="field">
+      <label for="name">Name <span class="req" aria-hidden="true">*</span></label>
+      <input id="name"
+             formControlName="name"
+             placeholder="Product name"
+             aria-required="true"
+             [attr.aria-invalid]="f.name.invalid && f.name.touched"
+             [attr.aria-describedby]="f.name.pending ? 'name-hint' :
+               (hasError('name', 'required') ? 'name-err-required' :
+               (hasError('name', errors.nameTaken) ? 'name-err-taken' : null))" />
+
+      @if (f.name.pending) {
+        <small id="name-hint" class="hint">Checking availability…</small>
+      }
+      @if (hasError('name', 'required')) {
+        <small id="name-err-required" class="error" role="alert">Name is required.</small>
+      }
+      @if (hasError('name', errors.nameTaken)) {
+        <small id="name-err-taken" class="error" role="alert">This name is already taken.</small>
+      }
+    </div>
+
+    <!-- Description -->
+    <div class="field">
+      <label for="description">Description <span class="req" aria-hidden="true">*</span></label>
+      <textarea id="description"
+                formControlName="description"
+                rows="3"
+                placeholder="At least 50 characters"
+                aria-required="true"
+                [attr.aria-invalid]="f.description.invalid && f.description.touched"
+                [attr.aria-describedby]="hasError('description', 'required') ? 'desc-err-required' :
+                  (hasError('description', 'minlength') ? 'desc-err-minlength' : null)"></textarea>
+
+      @if (hasError('description', 'required')) {
+        <small id="desc-err-required" class="error" role="alert">Description is required.</small>
+      }
+      @if (hasError('description', 'minlength')) {
+        <small id="desc-err-minlength" class="error" role="alert">
+          Description must be at least 50 characters
+          ({{ f.description.value.length }}/50).
+        </small>
+      }
+    </div>
+
+    <!-- Price -->
+    <div class="field">
+      <label for="price">Price <span class="req" aria-hidden="true">*</span></label>
+      <input id="price"
+             type="number"
+             formControlName="price"
+             placeholder="0.00"
+             step="0.01"
+             aria-required="true"
+             [attr.aria-invalid]="f.price.invalid && f.price.touched"
+             [attr.aria-describedby]="hasError('price', 'required') ? 'price-err-required' :
+               (hasError('price', 'min') ? 'price-err-min' : null)" />
+
+      @if (hasError('price', 'required')) {
+        <small id="price-err-required" class="error" role="alert">Price is required.</small>
+      }
+      @if (hasError('price', 'min')) {
+        <small id="price-err-min" class="error" role="alert">Price must be greater than 0.</small>
+      }
+    </div>
+
+    <!-- Sale Price -->
+    <div class="field">
+      <label for="salePrice">Sale Price</label>
+      <input id="salePrice"
+             type="number"
+             formControlName="salePrice"
+             placeholder="0.00"
+             step="0.01"
+             [attr.aria-invalid]="(f.salePrice.invalid && f.salePrice.touched)
+               || hasFormError(errors.salePriceNotLessThanPrice, 'salePrice', 'price')"
+             [attr.aria-describedby]="hasError('salePrice', 'min') ? 'sale-err-min' :
+               (hasFormError(errors.salePriceNotLessThanPrice, 'salePrice', 'price') ? 'sale-err-cross' : null)" />
+
+      @if (hasError('salePrice', 'min')) {
+        <small id="sale-err-min" class="error" role="alert">Sale price must be greater than 0.</small>
+      }
+      @if (hasFormError(errors.salePriceNotLessThanPrice, 'salePrice', 'price')) {
+        <small id="sale-err-cross" class="error" role="alert">Sale price must be less than the regular price.</small>
+      }
+    </div>
+
+    <!-- Status -->
+    <div class="field">
+      <label for="status">Status <span class="req" aria-hidden="true">*</span></label>
+      <select id="status"
+              formControlName="status"
+              aria-required="true"
+              [attr.aria-invalid]="f.status.invalid && f.status.touched"
+              [attr.aria-describedby]="hasError('status', 'required') ? 'status-err-required' :
+                (hasError('status', errors.invalidStatus) ? 'status-err-invalid' : null)">
+        <option value="">-- Select --</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
+
+      @if (hasError('status', 'required')) {
+        <small id="status-err-required" class="error" role="alert">Status is required.</small>
+      }
+      @if (hasError('status', errors.invalidStatus)) {
+        <small id="status-err-invalid" class="error" role="alert">
+          Status must be Pending, Approved, or Rejected.
+        </small>
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button type="submit" [disabled]="productForm.pending">
+        {{ productForm.pending ? 'Validating…' : 'Save Product' }}
+      </button>
+      <button type="button" class="secondary" (click)="onReset()">Reset</button>
+    </div>
+  </form>
+</section>
