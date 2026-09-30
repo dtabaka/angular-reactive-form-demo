@@ -46,7 +46,6 @@ export class ProductFormComponent {
   readonly statuses = PRODUCT_STATUSES;
 
   /** Reactive state. */
-  submitted = signal(false);
   savedProduct = signal<Product | null>(null);
 
   /** Strongly-typed reactive form — initialized at construction time. */
@@ -98,22 +97,19 @@ export class ProductFormComponent {
   }
 
   onSubmit(): void {
-    this.submitted.set(true);
-
-    if (this.productForm.invalid) {
-      this.productForm.markAllAsTouched();
+    if (this.productForm.invalid) { // checks if any validator (required, min, minlength, custom, async) is currently failing. If so, don't save
+      this.productForm.markAllAsTouched(); // marks every control as touched, even ones the user never interacted with. This is what makes all the error messages appear at once. So it's the "show me everything that's wrong" moment — the user clicks Save, every invalid field lights up red, and nothing is sent to the server.
       return;
     }
 
     const product = this.productForm.getRawValue() as Product;
     this.productService
       .saveProduct(product)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef)) //DestroyRef is an Angular injectable that lets you run cleanup logic when a component (or any injector-scoped context) is destroyed. It's the modern replacement for the ngOnDestroy lifecycle hook.
       .subscribe((saved) => this.savedProduct.set(saved));
   }
 
   onReset(): void {
-    this.submitted.set(false);
     this.savedProduct.set(null);
     this.productForm.reset();
   }

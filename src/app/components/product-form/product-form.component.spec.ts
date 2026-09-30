@@ -89,7 +89,6 @@ describe('ProductFormComponent', () => {
 
   it('should not submit when the form is invalid', () => {
     component.onSubmit();
-    expect(component.submitted()).toBe(true);
     expect(component.savedProduct()).toBeNull();
   });
 
@@ -113,9 +112,7 @@ describe('ProductFormComponent', () => {
   });
 
   it('should reset the form and clear state', () => {
-    component.submitted.set(true);
     component.onReset();
-    expect(component.submitted()).toBe(false);
     expect(component.savedProduct()).toBeNull();
   });
 });
