@@ -41,6 +41,20 @@ export function salePriceLessThanPrice(
 /**
  * Async validator factory: checks product-name uniqueness via ProductService.
  * Inject the service in the component and pass it here.
+ * If youu return a value inside a validation function it automatically populates the errors object due to Angulars internals.
+ * Whatever object you return populates the errors. The keys are whatever you choose. The values can be true, a string, an object with details — anything truthy.
+ * 
+    +-------------------------------------+--------------------------------------------+
+    | You return                          | Angular sets control.errors to             |
+    +-------------------------------------+--------------------------------------------+
+    | null                                | null (no errors — field is valid)          |
+    +-------------------------------------+--------------------------------------------+
+    | { nameTaken: true }                 | { nameTaken: true }                        |
+    +-------------------------------------+--------------------------------------------+
+    | { min: { min: 0.01, actual: 0 } }  | { min: { min: 0.01, actual: 0 } }           |
+    +-------------------------------------+--------------------------------------------+
+    | { foo: true, bar: true }           | { foo: true, bar: true } (multiple errors)  |
+    +-------------------------------------+--------------------------------------------+
  */
 export function nameUniqueValidator(
   service: ProductService,

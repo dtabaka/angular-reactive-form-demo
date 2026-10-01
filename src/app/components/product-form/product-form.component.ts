@@ -48,7 +48,7 @@ export class ProductFormComponent {
   /** Reactive state. */
   savedProduct = signal<Product | null>(null);
 
-  /** Strongly-typed reactive form — initialized at construction time. */
+  /** Strongly-typed reactive form — Allows for compile time safety and intellisense when adding form inputs below.*/
   productForm = new FormGroup<ProductForm>(
     {
       name: new FormControl('', {
